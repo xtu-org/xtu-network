@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Protocol, TypedDict, Literal
+from typing import TYPE_CHECKING, Any, Protocol, TypedDict, Literal, Optional
 from typing_extensions import override
 from urllib.parse import quote
 from functools import partial
@@ -127,34 +127,39 @@ class XtuNetwork:
         """获取在线用户信息
         注意：登录后才能调用该 API
         """
-        resp = await self.client.post(
-            url="http://172.16.0.32:8080/eportal/InterFace.do",
-            params={
-                "method": "getOnlineUserInfo",
-            },
-            data={
-                "userIndex": await self.getUserIndex(),
-            },
-        )
-        res: "OnlineUserInfo" = resp.json()
+        RETRY_COUNT = 5
+        for index in range(RETRY_COUNT):
+            resp = await self.client.post(
+                url="http://172.16.0.32:8080/eportal/InterFace.do",
+                params={
+                    "method": "getOnlineUserInfo",
+                },
+                data={
+                    "userIndex": await self.getUserIndex(),
+                },
+            )
+            res: "OnlineUserInfo" = resp.json()
 
-        class OnlineUserInfo(TypedDict):
-            """在线用户信息"""
+            class OnlineUserInfo(TypedDict):
+                """在线用户信息"""
 
-            userPackage: Literal["学生电信宽带套餐"]
-            """用户套餐"""
-            userName: str
-            """用户姓名"""
-            userIp: str
-            """用户 IP"""
-            userId: str
-            """学号"""
-            userIndex: str
-            """用户索引"""
-            maxLeavingTime: str
-            """最大在线时间"""
+                result: Literal["success", "fail"]
+                """结果"""
+                userPackage: Literal["学生电信宽带套餐"]
+                """用户套餐"""
+                userName: Optional[str]
+                """用户姓名"""
+                userIp: Optional[str]
+                """用户 IP"""
+                userId: Optional[str]
+                """学号"""
+                userIndex: Optional[str]
+                """用户索引"""
 
-        return res
+            if res["result"] == "success" or index == RETRY_COUNT - 1:
+                return res
+
+            await asyncio.sleep(2)
 
     async def checkOnline(self) -> bool:
         """检查在线状态"""
