@@ -87,7 +87,7 @@ class XtuNetwork:
 
     async def getUserIndex(self) -> str:
         """获取用户索引"""
-        if not hasattr(self, "_userIndex"):
+        if not hasattr(self, "_userIndex") or not self._userIndex:
             resp = await self.client.get(
                 url="http://172.16.0.32:8080/eportal/redirectortosuccess.jsp",
             )

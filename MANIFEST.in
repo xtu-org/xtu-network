@@ -1,0 +1,4 @@
+include xtu/**
+
+exclude test/*
+exclude example/*
