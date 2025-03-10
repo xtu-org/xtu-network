@@ -24,6 +24,10 @@ class XtuNetwork:
     """"""
 
     def __init__(self, username: int, password: str):
+        """
+        :param username: 学号
+        :param password: RSA 加密后的密码
+        """
         self.username = username
         self.password = password
         self.client = httpx.AsyncClient(timeout=None, headers=HEADERS)
