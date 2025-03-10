@@ -1,0 +1,4 @@
+include xtu_network/**
+
+exclude test/*
+exclude example/*
