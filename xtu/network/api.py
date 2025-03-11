@@ -190,6 +190,8 @@ class OnlineUserInfo(TypedDict):
     """学号"""
     userIndex: Optional[str]
     """用户索引"""
+    mabInfoMaxCount: int
+    """最大设备数量"""
 
 
 class LoginResult(TypedDict):
