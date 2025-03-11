@@ -74,6 +74,7 @@ class XtuNetwork:
             },
         )
         res: "LoginResult" = resp.json()
+        self._userIndex = res.get("userIndex", None)
 
         class LoginResult(TypedDict):
             """登录响应"""
@@ -123,6 +124,7 @@ class XtuNetwork:
                 "userIndex": await self.getUserIndex(),
             },
         )
+        self._userIndex = None
 
     async def getOnlineUserInfo(self) -> dict:
         """获取在线用户信息
@@ -159,7 +161,7 @@ class XtuNetwork:
             if res["result"] == "success" or index == RETRY_COUNT - 1:
                 return res
 
-            await asyncio.sleep(2)
+            await asyncio.sleep(random.randint(3, 8))
 
     async def checkOnline(self) -> bool:
         """检查在线状态"""
