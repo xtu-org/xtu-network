@@ -8,6 +8,7 @@ import httpx
 
 
 from .exception import NoLoginError
+from .const import MessageType, UserPackageType, NETWORK_TEST_URLS
 
 if TYPE_CHECKING:
 
@@ -21,7 +22,7 @@ HEADERS = {
 
 
 class XtuNetwork:
-    """"""
+    """校园网 API"""
 
     def __init__(self, username: int, password: str):
         """
@@ -81,7 +82,7 @@ class XtuNetwork:
             """用户索引"""
             result: Literal["success", "fail"]
             """结果"""
-            message: Literal["", "用户不存在或者密码错误!"]
+            message: MessageType
 
         return res
 
@@ -145,7 +146,7 @@ class XtuNetwork:
 
                 result: Literal["success", "fail"]
                 """结果"""
-                userPackage: Literal["学生电信宽带套餐"]
+                userPackage: UserPackageType
                 """用户套餐"""
                 userName: Optional[str]
                 """用户姓名"""
@@ -173,23 +174,5 @@ class XtuNetwork:
 
     async def checkNetwork(self) -> bool:
         """检查实际网络状态"""
-        urls = [
-            "http://www.baidu.com",
-            "http://www.qq.com",
-            "http://www.sohu.com",
-            "https://www.zhihu.com",
-            "https://www.bilibili.com",
-            "https://weibo.com",
-            "https://sogou.com",
-            "https://www.taobao.com",
-            "https://www.jd.com",
-            "https://www.douyin.com",
-            "https://www.apple.com.cn",
-            "https://www.mi.com",
-            "https://weread.qq.com",
-            "https://cloud.tencent.com",
-            "https://www.huaweicloud.com",
-            "https://www.aliyun.com",
-        ]
-        result = await asyncio.gather(*[self.client.get(url) for url in random.sample(urls, 3)])
+        result = await asyncio.gather(*[self.client.get(url) for url in random.sample(NETWORK_TEST_URLS, 3)])
         return any(r.status_code == 200 for r in result)
