@@ -24,6 +24,8 @@ MessageType: TypeAlias = Literal[
 UserPackageType: TypeAlias = Literal[
     "学生电信宽带套餐",
     "学生联通宽带套餐",
+    "学生移动宽带套餐",
+    "学生校园网有线包月",
 ]
 
 
