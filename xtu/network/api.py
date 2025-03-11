@@ -163,6 +163,19 @@ class XtuNetwork:
 
             await asyncio.sleep(random.randint(3, 8))
 
+    async def getErrorMsg(self) -> str:
+        """获取错误信息"""
+        resp = await self.client.post(
+            url="http://172.16.0.32:8080/eportal/userV2.do",
+            params={
+                "method": "getErrorMsg",
+            },
+            data={
+                "userIndex": await self.getUserIndex(),
+            },
+        )
+        return resp.text
+
     async def checkOnline(self) -> bool:
         """检查在线状态"""
         resp = await self.client.get(
