@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any, Protocol, TypedDict, Literal, Optional
+from json.decoder import JSONDecodeError
 from typing_extensions import override
 from urllib.parse import quote
 from functools import partial
@@ -9,6 +12,7 @@ import httpx
 
 from .exception import NoLoginError
 from .const import MessageType, UserPackageType, NETWORK_TEST_URLS, RETRY_COUNT
+from .utils import logger
 
 if TYPE_CHECKING:
 
@@ -53,7 +57,7 @@ class XtuNetwork:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.aclose()
 
-    async def login(self):
+    async def login(self) -> "LoginResult":
         """登录校园网"""
         if not self.password or not self.username:
             raise ValueError("用户名或密码不能为空")
@@ -75,15 +79,6 @@ class XtuNetwork:
         )
         res: "LoginResult" = resp.json()
         self._userIndex = res.get("userIndex", None)
-
-        class LoginResult(TypedDict):
-            """登录响应"""
-
-            userIndex: str
-            """用户索引"""
-            result: Literal["success", "fail"]
-            """结果"""
-            message: MessageType
 
         return res
 
@@ -126,7 +121,7 @@ class XtuNetwork:
         )
         self._userIndex = None
 
-    async def getOnlineUserInfo(self) -> dict:
+    async def getOnlineUserInfo(self) -> "OnlineUserInfo" | dict:
         """获取在线用户信息
         注意：登录后才能调用该 API
         """
@@ -140,23 +135,11 @@ class XtuNetwork:
                     "userIndex": await self.getUserIndex(),
                 },
             )
-            res: "OnlineUserInfo" = resp.json()
-
-            class OnlineUserInfo(TypedDict):
-                """在线用户信息"""
-
-                result: Literal["success", "fail"]
-                """结果"""
-                userPackage: UserPackageType
-                """用户套餐"""
-                userName: Optional[str]
-                """用户姓名"""
-                userIp: Optional[str]
-                """用户 IP"""
-                userId: Optional[str]
-                """学号"""
-                userIndex: Optional[str]
-                """用户索引"""
+            try:
+                res: "OnlineUserInfo" = resp.json()
+            except JSONDecodeError:
+                logger.warning(f"getOnlineUserInfo response is not json: {resp.text}")
+                return {}
 
             if res["result"] == "success" or index == RETRY_COUNT - 1:
                 return res
@@ -190,3 +173,30 @@ class XtuNetwork:
         """检查实际网络状态"""
         result = await asyncio.gather(*[self.client.get(url) for url in random.sample(NETWORK_TEST_URLS, 3)])
         return any(r.status_code == 200 for r in result)
+
+
+class OnlineUserInfo(TypedDict):
+    """在线用户信息"""
+
+    result: Literal["success", "fail"]
+    """结果"""
+    userPackage: UserPackageType
+    """用户套餐"""
+    userName: Optional[str]
+    """用户姓名"""
+    userIp: Optional[str]
+    """用户 IP"""
+    userId: Optional[str]
+    """学号"""
+    userIndex: Optional[str]
+    """用户索引"""
+
+
+class LoginResult(TypedDict):
+    """登录响应"""
+
+    userIndex: str
+    """用户索引"""
+    result: Literal["success", "fail"]
+    """结果"""
+    message: MessageType
