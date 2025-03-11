@@ -1,4 +1,5 @@
 from typing import TypeAlias, Literal
+import os
 
 MessageType: TypeAlias = Literal[
     "",
@@ -44,3 +45,6 @@ NETWORK_TEST_URLS = [
     "https://www.huaweicloud.com",
     "https://www.aliyun.com",
 ]
+
+
+RETRY_COUNT = int(os.getenv("XTU_NETWORK_RETRY_COUNT", 20))

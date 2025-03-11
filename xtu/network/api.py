@@ -8,7 +8,7 @@ import httpx
 
 
 from .exception import NoLoginError
-from .const import MessageType, UserPackageType, NETWORK_TEST_URLS
+from .const import MessageType, UserPackageType, NETWORK_TEST_URLS, RETRY_COUNT
 
 if TYPE_CHECKING:
 
@@ -128,7 +128,6 @@ class XtuNetwork:
         """获取在线用户信息
         注意：登录后才能调用该 API
         """
-        RETRY_COUNT = 5
         for index in range(RETRY_COUNT):
             resp = await self.client.post(
                 url="http://172.16.0.32:8080/eportal/InterFace.do",
