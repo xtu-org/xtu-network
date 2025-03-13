@@ -178,5 +178,20 @@ class XtuNetwork:
 
     async def checkNetwork(self) -> bool:
         """检查实际网络状态"""
-        result = await asyncio.gather(*[self.client.get(url) for url in random.sample(NETWORK_TEST_URLS, 3)])
-        return any(r.status_code == 200 for r in result)
+
+        async def _request(client: httpx.AsyncClient, url: str) -> bool:
+            """请求"""
+            try:
+                resp = await client.get(url, timeout=None)
+            except (httpx.ConnectError, httpx.ReadTimeout):
+                return False
+            else:
+                if "<script>top.self.location.href='http://172.16.0.32:8080/eportal/index.jsp" in resp.text:
+                    return False
+                else:
+                    return True
+
+        result = await asyncio.gather(
+            *[_request(self.client, url) for url in random.sample(NETWORK_TEST_URLS, 3)]
+        )
+        return any(item for item in result)
