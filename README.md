@@ -14,6 +14,7 @@ pip install git+https://github.com/xtu-hit/xtu-network-python.git@main#egg=xtu-n
 
 ## 示例
 
+简单示例
 ```python
 from xtu.network import XtuNetwork
 from xtu.network import NoLoginError
@@ -36,6 +37,7 @@ async def main():
         except NoLoginError:
             pass
 ```
+详见 [example.py](https://github.com/xtu-org/xtu-network/blob/main/example/main.py) 用法
 
 ## 说明
 
