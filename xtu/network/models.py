@@ -26,11 +26,11 @@ class OnlineUserInfo(TypedDict):
     """校园网信息"""
 
     @staticmethod
-    def get_online_count(ballInfo: str) -> int:
+    def get_online_count_from_ball_info(ballInfo: str) -> int:
         """获取在线设备数量"""
         try:
             data: list[dict] = json.loads(ballInfo)
-            return next((item["value"] for item in data if item["id"] == "onlinedevice"), 0)
+            return int(next((item["value"] for item in data if item["id"] == "onlinedevice"), 0))
         except (JSONDecodeError, KeyError):
             return 0
 

@@ -17,6 +17,7 @@ pip install git+https://github.com/xtu-hit/xtu-network-python.git@main#egg=xtu-n
 ```python
 from xtu.network import XtuNetwork
 from xtu.network import NoLoginError
+from xtu.network import OnlineUserInfo
 
 async def main():
     async with XtuNetwork(202400001111, "password") as xtu:
@@ -24,7 +25,9 @@ async def main():
         print(await xtu.checkOnline())
 
         print(await xtu.getErrorMsg())
-        print(await xtu.getOnlineUserInfo())
+        print(res := await xtu.getOnlineUserInfo())
+
+        print(OnlineUserInfo.get_online_count_from_ball_info(res["ballInfo"]))
 
         print(await xtu.checkNetwork())
 
