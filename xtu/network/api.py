@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Protocol, TypedDict, Literal, Optional
+from typing import TYPE_CHECKING, Any, Protocol
 from json.decoder import JSONDecodeError
 from typing_extensions import override
 from urllib.parse import quote
@@ -11,7 +11,8 @@ import httpx
 
 
 from .exception import NoLoginError
-from .const import MessageType, UserPackageType, NETWORK_TEST_URLS, RETRY_COUNT
+from .const import NETWORK_TEST_URLS, RETRY_COUNT
+from .models import LoginResult, OnlineUserInfo
 from .utils import logger
 
 if TYPE_CHECKING:
@@ -173,32 +174,3 @@ class XtuNetwork:
         """检查实际网络状态"""
         result = await asyncio.gather(*[self.client.get(url) for url in random.sample(NETWORK_TEST_URLS, 3)])
         return any(r.status_code == 200 for r in result)
-
-
-class OnlineUserInfo(TypedDict):
-    """在线用户信息"""
-
-    result: Literal["success", "fail"]
-    """结果"""
-    userPackage: UserPackageType
-    """用户套餐"""
-    userName: Optional[str]
-    """用户姓名"""
-    userIp: Optional[str]
-    """用户 IP"""
-    userId: Optional[str]
-    """学号"""
-    userIndex: Optional[str]
-    """用户索引"""
-    mabInfoMaxCount: int
-    """最大设备数量"""
-
-
-class LoginResult(TypedDict):
-    """登录响应"""
-
-    userIndex: str
-    """用户索引"""
-    result: Literal["success", "fail"]
-    """结果"""
-    message: MessageType

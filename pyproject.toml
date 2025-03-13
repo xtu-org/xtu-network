@@ -1,6 +1,6 @@
 [project]
 name = "xtu-network"
-version = "0.0.14"
+version = "0.0.15"
 description = "湘潭大学校园网登录 API"
 authors = [{ name = "YangRucheng", email = "admin@yangrucheng.top" }]
 dependencies = ["httpx>0.28.0"]
