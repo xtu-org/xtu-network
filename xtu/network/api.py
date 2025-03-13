@@ -10,7 +10,7 @@ import random
 import httpx
 
 
-from .exception import NoLoginError
+from .exception import NoLoginError, LoginReadyError
 from .const import NETWORK_TEST_URLS, RETRY_COUNT
 from .models import LoginResult, OnlineUserInfo
 from .utils import logger
@@ -84,7 +84,9 @@ class XtuNetwork:
         return res
 
     async def getUserIndex(self) -> str:
-        """获取用户索引"""
+        """获取用户索引
+        注意：登录后才能调用该 API
+        """
         if not hasattr(self, "_userIndex") or not self._userIndex:
             resp = await self.client.get(
                 url="http://172.16.0.32:8080/eportal/redirectortosuccess.jsp",
@@ -100,14 +102,18 @@ class XtuNetwork:
         """获取 queryString
         注意：登录后无法调用该 API
         """
-        resp = await self.client.get(
-            url="http://123.123.123.123",
-        )
-        queryString = resp.text.replace(
-            "<script>top.self.location.href='http://172.16.0.32:8080/eportal/index.jsp?",
-            "",
-        ).replace("'</script>", "")
-        return queryString.replace("\r\n", "")
+        try:
+            resp = await self.client.get(
+                url="http://123.123.123.123",
+            )
+        except httpx.ReadError:
+            raise LoginReadyError
+        else:
+            queryString = resp.text.replace(
+                "<script>top.self.location.href='http://172.16.0.32:8080/eportal/index.jsp?",
+                "",
+            ).replace("'</script>", "")
+            return queryString.replace("\r\n", "")
 
     async def logout(self):
         """注销校园网"""
