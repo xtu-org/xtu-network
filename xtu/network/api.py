@@ -201,7 +201,7 @@ class XtuNetwork:
         while True:
             await asyncio.sleep(max(interval, 1.5))
 
-            if (await self.checkNetwork) or (await self.checkOnline()):
+            if (await self.checkNetwork()) or (await self.checkOnline()):
                 logger.info("在线")
                 continue
 
