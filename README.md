@@ -14,14 +14,14 @@ pip install git+https://github.com/xtu-hit/xtu-network-python.git@main#egg=xtu-n
 
 ## 示例
 
-简单示例
+简单代码示例
 ```python
 from xtu.network import XtuNetwork
 from xtu.network import NoLoginError
 from xtu.network import OnlineUserInfo
 
 async def main():
-    async with XtuNetwork(202400001111, "password") as xtu:
+    async with XtuNetwork(202400001111, "rsa_password") as xtu:
         print(await xtu.login())
         print(await xtu.checkOnline())
 
@@ -46,6 +46,10 @@ async def main():
 - `getOnlineUserInfo()` 用于获取在线用户信息，返回一个字典。
 - `checkNetwork()` 用于检查网络状态，返回一个布尔值。
 - `logout()` 用于退出校园网，无返回值，如果尚未登录则抛出 `NoLoginError` 异常。
+
+**如何获得 RSA 加密后的密码？**
+
+使用 [security.html](https://github.com/xtu-org/xtu-network/blob/main/example/web/security.html) 获取，或者 F12 查看校园网登录请求。
 
 ## 开源协议
 
