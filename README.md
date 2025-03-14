@@ -41,9 +41,7 @@ async def main():
 
 ## 说明
 
-- `XtuNetwork` 类是 `xtu.network` 模块的网络类，用于连接校园网。
-- `NoLoginError` 异常是 `xtu.network` 模块的异常类，用于表示尚未登录校园网。
-
+- `XtuNetwork` 类用于连接校园网。
 - `getErrorMsg()` 乍一看是获取错误信息，实际上什么也不返回，但是不调用此 API 的话 `getOnlineUserInfo` 就无法正确返回。
 - `getOnlineUserInfo()` 用于获取在线用户信息，返回一个字典。
 - `checkNetwork()` 用于检查网络状态，返回一个布尔值。

@@ -46,7 +46,12 @@ NETWORK_TEST_URLS = [
     "https://cloud.tencent.com",
     "https://www.huaweicloud.com",
     "https://www.aliyun.com",
+    "https://news.sina.com.cn",
+    "https://news.cctv.com",
+    "https://app.toutiao.com",
+    "https://www.toutiao.com",
+    "https://www.doubao.com",
 ]
 
 
-RETRY_COUNT = int(os.getenv("XTU_NETWORK_RETRY_COUNT", 20))
+RETRY_COUNT = int(os.getenv("XTU_NETWORK_RETRY_COUNT", 3))

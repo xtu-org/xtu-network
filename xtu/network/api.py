@@ -195,3 +195,18 @@ class XtuNetwork:
             *[_request(self.client, url) for url in random.sample(NETWORK_TEST_URLS, 3)]
         )
         return any(item for item in result)
+
+    async def loop(self, interval: float = 5):
+        """循环检测在线状态"""
+        while True:
+            await asyncio.sleep(max(interval, 1.5))
+
+            if (await self.checkNetwork) or (await self.checkOnline()):
+                logger.info("在线")
+                continue
+
+            try:
+                logger.warning("离线，自动登录")
+                await self.login()
+            except LoginReadyError:
+                pass

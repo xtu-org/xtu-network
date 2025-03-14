@@ -25,6 +25,8 @@ async def main():
         except NoLoginError:
             print("Not logged in.")
 
+        await xtu.loop()
+
 
 if __name__ == "__main__":
     import asyncio
