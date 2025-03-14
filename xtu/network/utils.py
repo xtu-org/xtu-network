@@ -1,9 +1,6 @@
 import logging
 import sys
 
-logging.basicConfig(level=logging.INFO)
-
-logger = logging.getLogger("XTU-NETWORK")
 
 TIME_COLOR = "\033[32m"
 LEVEL_COLOR = "\033[33m"
@@ -12,7 +9,15 @@ LOG_FORMATE = f"{TIME_COLOR}%(asctime)s{RESET} - {LEVEL_COLOR}%(levelname)s{RESE
 
 logging.basicConfig(level=logging.INFO, format=LOG_FORMATE, stream=sys.stdout)
 
-logger = logging.getLogger("httpx")
-logger.setLevel(logging.WARNING)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(LOG_FORMATE))
+
+logger = logging.getLogger("XTU-NETWORK")
+logger.setLevel(logging.INFO)
+# logger.handlers.clear()
+# logger.addHandler(handler)
+
+_logger = logging.getLogger("httpx")
+_logger.setLevel(logging.WARNING)
 
 __all__ = ["logger"]
