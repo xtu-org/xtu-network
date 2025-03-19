@@ -182,8 +182,8 @@ class XtuNetwork:
         async def _request(client: httpx.AsyncClient, url: str) -> bool:
             """请求"""
             try:
-                resp = await client.get(url, timeout=None)
-            except (httpx.ConnectError, httpx.ReadTimeout):
+                resp = await client.get(url, timeout=3.0)
+            except (httpx.NetworkError, httpx.TimeoutException):
                 return False
             else:
                 if "<script>top.self.location.href='http://172.16.0.32:8080/eportal/index.jsp" in resp.text:
