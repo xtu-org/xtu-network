@@ -29,14 +29,14 @@ HEADERS = {
 class XtuNetwork:
     """校园网 API"""
 
-    def __init__(self, username: int, password: str):
+    def __init__(self, username: int, password: str, **args):
         """
         :param username: 学号
         :param password: RSA 加密后的密码
         """
         self.username = username
         self.password = password
-        self.client = httpx.AsyncClient(timeout=None, headers=HEADERS)
+        self.client = httpx.AsyncClient(timeout=None, headers=HEADERS, **args)
 
     @override
     def __getattr__(self, name: str, **data: Any) -> "_ApiCall":
@@ -168,13 +168,17 @@ class XtuNetwork:
 
     async def checkOnline(self) -> bool:
         """检查在线状态"""
-        resp = await self.client.get(
-            url="http://172.16.0.32:8080/eportal/redirectortosuccess.jsp",
-        )
-        if resp.next_request.url.host == "123.123.123.123":
-            return False
+        try:
+            resp = await self.client.get(
+                url="http://172.16.0.32:8080/eportal/redirectortosuccess.jsp",
+            )
+        except httpx.NetworkError:
+            return True  # 无法连接到认证服务器，避免重复登录
         else:
-            return True
+            if resp.next_request.url.host == "123.123.123.123":
+                return False
+            else:
+                return True
 
     async def checkNetwork(self) -> bool:
         """检查实际网络状态"""
@@ -202,7 +206,7 @@ class XtuNetwork:
             await asyncio.sleep(max(interval, 1.5))
 
             if (await self.checkNetwork()) or (await self.checkOnline()):
-                logger.info("在线")
+                logger.info(f"在线 {self.username}")
                 continue
 
             try:
