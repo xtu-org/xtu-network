@@ -6,6 +6,7 @@ from typing_extensions import override
 from urllib.parse import quote
 from functools import partial
 import asyncio
+import string
 import random
 import httpx
 
@@ -13,6 +14,7 @@ import httpx
 from .exception import NoLoginError, LoginReadyError
 from .const import NETWORK_TEST_URLS, RETRY_COUNT
 from .models import LoginResult, OnlineUserInfo
+from .encrypt import encryptedPassword
 from .utils import logger
 
 if TYPE_CHECKING:
@@ -35,8 +37,13 @@ class XtuNetwork:
         :param password: RSA 加密后的密码
         """
         self.username = username
-        self.password = password
         self.client = httpx.AsyncClient(timeout=None, headers=HEADERS, **args)
+
+        if len(password) == 256:  # RSA 加密后的密码
+            self.password = password
+        else:  # 未加密的密码
+            mac = "".join(random.choice(string.hexdigits.lower()) for _ in range(32))
+            self.password = encryptedPassword(f"{password}>{mac}")
 
     @override
     def __getattr__(self, name: str, **data: Any) -> "_ApiCall":
